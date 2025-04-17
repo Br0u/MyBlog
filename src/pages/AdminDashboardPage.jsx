@@ -4,6 +4,7 @@ import AdminLayout from "../layouts/AdminLayout";
 import LoadingState from "../components/ui/LoadingState";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
+import FirebaseSyncSetup from "../components/FirebaseSyncSetup";
 import * as postService from "../services/postService";
 
 function AdminDashboardPage() {
@@ -11,6 +12,7 @@ function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [syncMessage, setSyncMessage] = useState(null);
+  const [syncMode, setSyncMode] = useState(localStorage.getItem("syncMode") || "local");
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -116,12 +118,35 @@ function AdminDashboardPage() {
     e.target.value = null;
   };
 
+  const handleSyncModeChange = (mode) => {
+    setSyncMode(mode);
+    // 切换同步模式后重新加载文章
+    setTimeout(() => {
+      setLoading(true);
+      const fetchPosts = async () => {
+        try {
+          const allPosts = await postService.getAllPosts();
+          setPosts(allPosts);
+        } catch (error) {
+          console.error("Failed to fetch posts:", error);
+          setError("Failed to load posts. Please try again later.");
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchPosts();
+    }, 500);
+  };
+
   // 文章数量统计
   const publishedCount = posts.filter(post => post.status === 'published').length;
   const draftCount = posts.filter(post => post.status === 'draft').length;
 
   return (
     <AdminLayout title="Dashboard">
+      {/* Firebase同步设置组件 */}
+      <FirebaseSyncSetup onSyncModeChange={handleSyncModeChange} />
+      
       {/* 同步控制区域 */}
       <div className="mb-8 bg-sepia-lightest/50 p-4 rounded-lg border border-sepia-light/20">
         <div className="flex flex-wrap items-center justify-between">
