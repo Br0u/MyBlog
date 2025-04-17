@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node vercel-build.js",
+    "build": "bash deploy.sh",
+    "vite-build": "vite build",
     "build:github": "node deploy-github.js",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",

@@ -1,4 +1,6 @@
 {
+  "buildCommand": "bash deploy.sh",
+  "outputDirectory": "dist",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ],
@@ -9,11 +11,5 @@
   "github": {
     "silent": true
   },
-  "cleanUrls": true,
-  "build": {
-    "env": {
-      "NODE_ENV": "production"
-    }
-  },
-  "buildCommand": "node vercel-build.js"
+  "cleanUrls": true
 } 
