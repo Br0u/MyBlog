@@ -8,6 +8,12 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 import PostEditorPage from "./pages/PostEditorPage";
 import "./App.css";
 
+// 诊断日志
+console.log("App.jsx正在加载");
+console.log("当前环境:", import.meta.env.MODE);
+console.log("基础URL:", import.meta.env.BASE_URL);
+console.log("当前URL:", window.location.href);
+
 function App() {
   return (
     <Router>

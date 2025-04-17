@@ -4,7 +4,39 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
+    <title>My Blog</title>
+    <script type="text/javascript">
+      (function() {
+        // Check if we're on GitHub Pages or custom domain
+        if (window.location.hostname.includes('github.io') || 
+            window.location.hostname === 'www.brulog.com' || 
+            window.location.hostname === 'brulog.com') {
+          
+          console.log("正在执行重定向检查...");
+          console.log("当前URL:", window.location.href);
+          
+          const path = window.location.pathname;
+          const hostname = window.location.hostname;
+          
+          // Determine base path
+          let basePath = '';
+          if (hostname.includes('github.io')) {
+            basePath = '/MyBlog';
+          }
+          
+          // Handle 404 errors
+          if (document.title === '404 - Page not found' || 
+              window.location.href.indexOf('/404.html') !== -1) {
+            console.log("检测到404错误，正在重定向...");
+            
+            // Redirect to the SPA router
+            const redirectTo = window.location.origin + basePath + '/#' + path.replace(basePath, '');
+            console.log("重定向到:", redirectTo);
+            window.location.replace(redirectTo);
+          }
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

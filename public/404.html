@@ -4,23 +4,46 @@
   <meta charset="utf-8">
   <title>Redirecting...</title>
   <script>
-    // 获取当前URL
-    const path = window.location.pathname;
+    // 获取当前URL信息
+    const location = window.location;
+    const path = location.pathname;
+    const hostname = location.hostname;
     
-    // 检查当前域名是否已经是自定义域名
-    const isCustomDomain = window.location.hostname === 'www.brulog.com';
-    const repoPath = isCustomDomain ? '' : '/MyBlog';
+    // Debug info
+    console.log('404 redirect script running');
+    console.log('Current URL:', location.href);
+    console.log('Path:', path);
+    console.log('Hostname:', hostname);
     
-    // 对于不是直接位于根目录的页面，重定向至带有hash的首页
-    if (path !== repoPath && path !== repoPath + '/') {
-      const redirectUrl = window.location.origin + repoPath + '/#' + path.replace(repoPath, '');
-      window.location.replace(redirectUrl);
+    // 检查是否是GitHub Pages域名或自定义域名
+    const isGitHubPages = hostname.includes('github.io');
+    const isCustomDomain = hostname === 'www.brulog.com' || hostname === 'brulog.com';
+    
+    // 确定基础路径前缀
+    let basePath = '';
+    
+    if (isGitHubPages) {
+      console.log('GitHub Pages detected');
+      basePath = '/MyBlog';
     } else {
-      window.location.replace(window.location.origin + repoPath);
+      console.log('Custom domain or local development detected');
     }
+    
+    console.log('Base path:', basePath);
+    
+    // 构建重定向URL - 将所有路径重定向到单页应用路由
+    const redirectUrl = `${location.origin}${basePath}/#${path}`;
+    
+    console.log('Redirecting to:', redirectUrl);
+    window.location.replace(redirectUrl);
   </script>
 </head>
 <body>
-  <p>If you are not redirected automatically, follow this <a href="/">link</a>.</p>
+  <p>If you are not redirected automatically, follow this <a id="homeLink" href="/">link</a> to go to the homepage.</p>
+  
+  <script>
+    // 更新链接地址以匹配正确的重定向路径
+    document.getElementById('homeLink').href = window.location.origin + (isGitHubPages ? '/MyBlog' : '');
+  </script>
 </body>
 </html> 
