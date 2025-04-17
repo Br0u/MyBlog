@@ -1,12 +1,31 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// 检查是否为生产环境
-const isProd = process.env.NODE_ENV === 'production';
+// 检测环境
+const isVercel = process.env.VERCEL === '1';
+const isGitHubPages = process.env.GITHUB_PAGES === 'true';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // 如果是生产环境且自定义域名存在，则base为'/'，否则为'/MyBlog/'
-  base: isProd ? '/' : '/MyBlog/',
+  // 根据部署环境设置基本路径
+  base: isGitHubPages ? '/MyBlog/' : '/',
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    // 确保生成404.html
+    rollupOptions: {
+      input: {
+        main: 'index.html'
+      }
+    }
+  },
+  server: {
+    open: true,
+    // 日志
+    onBeforeMiddleware() {
+      console.log('Server mode: ' + (isGitHubPages ? 'GitHub Pages' : isVercel ? 'Vercel' : 'Local/Custom'));
+      console.log('Base path: ' + (isGitHubPages ? '/MyBlog/' : '/'));
+    }
+  }
 })
