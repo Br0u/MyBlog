@@ -3,8 +3,8 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import './pages/markdown-styles.css'
 import App from './App.jsx'
-// 导入Firebase初始化函数
-import { initializeFirebaseData } from './services/postService';
+// 导入初始化函数
+import { initializeData } from './services/postService';
 
 // 初始化主题设置
 const initializeTheme = () => {
@@ -22,15 +22,15 @@ const initializeTheme = () => {
   }
 };
 
-// 初始化Firebase数据
+// 初始化应用
 const initializeApp = async () => {
   try {
     // 应用初始主题
     initializeTheme();
     
-    // 初始化Firebase数据（如果数据库为空）
-    await initializeFirebaseData();
-    console.log('Firebase数据初始化完成');
+    // 检查并初始化本地存储的示例数据
+    // 这一步已在postService中自动完成
+    console.log('应用初始化完成');
   } catch (error) {
     console.error('应用初始化失败:', error);
   }

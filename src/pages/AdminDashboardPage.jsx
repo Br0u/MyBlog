@@ -9,6 +9,7 @@ import * as postService from "../services/postService";
 function AdminDashboardPage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,10 +23,12 @@ function AdminDashboardPage() {
     // Load posts data from service
     const fetchPosts = async () => {
       try {
-        const allPosts = postService.getAllPosts();
+        const allPosts = await postService.getAllPosts();
+        console.log("Fetched posts:", allPosts);
         setPosts(allPosts);
       } catch (error) {
         console.error("Failed to fetch posts:", error);
+        setError("Failed to load posts. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -34,13 +37,14 @@ function AdminDashboardPage() {
     fetchPosts();
   }, [navigate]);
 
-  const handleDeletePost = (id) => {
+  const handleDeletePost = async (id) => {
     if (window.confirm("Are you sure you want to delete this post?")) {
       try {
-        postService.deletePost(id);
+        await postService.deletePost(id);
         setPosts(posts.filter(post => post.id !== id));
       } catch (error) {
         console.error("Failed to delete post:", error);
+        alert("Failed to delete post: " + error.message);
       }
     }
   };
@@ -89,6 +93,17 @@ function AdminDashboardPage() {
 
       {loading ? (
         <LoadingState message="Loading your posts..." />
+      ) : error ? (
+        <div className="bg-red-50 p-4 rounded-lg border border-red-200 text-red-700 mb-6">
+          <p>{error}</p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            variant="secondary"
+            className="mt-2"
+          >
+            Try Again
+          </Button>
+        </div>
       ) : posts.length === 0 ? (
         <EmptyState 
           title="No posts yet"
