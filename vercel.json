@@ -1,12 +1,8 @@
 {
-  "buildCommand": "bash deploy.sh",
+  "buildCommand": "vite build && cp dist/index.html dist/404.html",
   "outputDirectory": "dist",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
   ],
   "github": {
     "silent": true
