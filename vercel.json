@@ -9,5 +9,11 @@
   "github": {
     "silent": true
   },
-  "cleanUrls": true
+  "cleanUrls": true,
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
+  "buildCommand": "node vercel-build.js"
 } 
