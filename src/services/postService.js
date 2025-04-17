@@ -402,4 +402,79 @@ export const initializeFirebaseData = async () => {
 // 判断当前环境是否支持Firestore - 本地存储版本始终返回false
 export const isFirebaseAvailable = () => {
   return false;
+};
+
+// 导出博客数据（便于跨设备同步）
+export const exportData = async () => {
+  try {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const posts = JSON.parse(localStorage.getItem('blog_posts') || '[]');
+        const exportData = {
+          posts: posts,
+          version: '1.0',
+          exportDate: new Date().toISOString()
+        };
+        
+        // 将数据转换为JSON字符串
+        const jsonData = JSON.stringify(exportData, null, 2);
+        
+        // 创建Blob和下载链接
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        // 创建下载链接并自动下载
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `myblog-export-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        
+        // 清理
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 0);
+        
+        resolve(true);
+      }, 300);
+    });
+  } catch (error) {
+    console.error('导出数据时出错:', error);
+    throw error;
+  }
+};
+
+// 导入博客数据
+export const importData = async (jsonData) => {
+  try {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        try {
+          // 解析导入的JSON数据
+          const importedData = JSON.parse(jsonData);
+          
+          // 简单的验证
+          if (!importedData.posts || !Array.isArray(importedData.posts)) {
+            reject(new Error('导入的数据格式不正确'));
+            return;
+          }
+          
+          // 保存导入的文章
+          localStorage.setItem('blog_posts', JSON.stringify(importedData.posts));
+          console.log(`已导入 ${importedData.posts.length} 篇文章`);
+          
+          resolve({
+            success: true,
+            count: importedData.posts.length
+          });
+        } catch (parseError) {
+          reject(new Error('无法解析导入的数据: ' + parseError.message));
+        }
+      }, 300);
+    });
+  } catch (error) {
+    console.error('导入数据时出错:', error);
+    throw error;
+  }
 }; 
