@@ -1,0 +1,575 @@
+/* Custom markdown styling to ensure consistent rendering */
+
+/* 确保 MDEditor 的全局样式设置 */
+:root {
+  --color-text-primary: #4b3621;
+  --color-bg-primary: #f9f6f0;
+  --color-border: rgba(139, 115, 85, 0.2);
+}
+
+/* 基础样式 - 针对所有 markdown 渲染环境 */
+.markdown-body,
+.blog-content {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #4a4238;
+  line-height: 1.7;
+}
+
+/* 标题样式 */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+  font-family: inherit;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #3d2b1f;
+}
+
+.markdown-body h1 {
+  font-size: 2.25rem;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+  padding-bottom: 0.5rem;
+}
+
+.markdown-body h2 {
+  font-size: 1.75rem;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.1);
+  padding-bottom: 0.3rem;
+}
+
+.markdown-body h3 {
+  font-size: 1.5rem;
+}
+
+/* 段落和链接 */
+.markdown-body p {
+  margin-bottom: 1.5rem;
+}
+
+.markdown-body a {
+  color: #8c6d46;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease, text-decoration-thickness 0.2s ease;
+}
+
+.markdown-body a:hover {
+  color: #4a371f;
+  text-decoration-thickness: 2px;
+}
+
+/* 列表 */
+.markdown-body ul,
+.markdown-body ol {
+  margin: 1.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.markdown-body li {
+  margin-bottom: 0.5rem;
+}
+
+.markdown-body ul li {
+  list-style-type: disc;
+}
+
+.markdown-body ol li {
+  list-style-type: decimal;
+}
+
+/* 引用块 */
+.markdown-body blockquote {
+  margin: 1em 0;
+  padding-left: 1em;
+  border-left: 2px solid #e8dfc7;
+  color: #8d7b68;
+  font-style: italic;
+  background-color: rgba(248, 244, 232, 0.5);
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* 图片 */
+.markdown-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 2rem auto;
+  display: block;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* 图片标题 */
+.markdown-body img + em {
+  display: block;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #7c7267;
+  margin-top: -1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* 代码块和内联代码 */
+.markdown-body pre {
+  margin: 1em 0;
+  padding: 1em;
+  overflow: auto;
+  background-color: #2d2a24;
+  color: #f8f4e8;
+  border: 1px solid #8b7355;
+  border-radius: 4px;
+}
+
+.markdown-body code {
+  font-family: 'Fira Code', 'Courier New', monospace;
+  background-color: rgba(139, 115, 85, 0.1);
+  color: #8b5a2b;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-size: 0.875em;
+}
+
+.markdown-body pre code {
+  background-color: transparent;
+  color: #f5deb3;
+  padding: 0;
+  border-radius: 0;
+}
+
+/* 水平线 */
+.markdown-body hr {
+  margin: 2rem 0;
+  border: 0;
+  height: 1px;
+  background: linear-gradient(to right, rgba(210, 200, 185, 0.1), rgba(210, 200, 185, 0.5), rgba(210, 200, 185, 0.1));
+}
+
+/* 表格 */
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  font-size: 0.9rem;
+}
+
+.markdown-body table th {
+  background-color: rgba(210, 200, 185, 0.2);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(210, 200, 185, 0.3);
+}
+
+.markdown-body table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(210, 200, 185, 0.1);
+}
+
+.markdown-body table tr:hover {
+  background-color: rgba(210, 200, 185, 0.05);
+}
+
+/* 预览区域样式 */
+.markdown-preview {
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: #f9f6f0;
+  border: 1px solid rgba(139, 115, 85, 0.1);
+}
+
+/* 调试信息区域 */
+details summary {
+  cursor: pointer;
+}
+
+details pre {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.85em;
+}
+
+/* Support for the MD editor's headings */
+.w-md-editor-text-pre > code,
+.w-md-editor-text-input {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace !important;
+}
+
+/* Integration with @uiw/react-md-editor */
+.wmde-markdown {
+  font-family: "Noto Serif", Georgia, "Times New Roman", serif !important;
+  color: #4b3621 !important;
+  background-color: transparent !important;
+}
+
+.wmde-markdown h1,
+.wmde-markdown h2,
+.wmde-markdown h3,
+.wmde-markdown h4,
+.wmde-markdown h5,
+.wmde-markdown h6 {
+  font-family: "Noto Serif", Georgia, "Times New Roman", serif !important;
+  color: #3d2b1f !important;
+  margin-top: 1.5em !important;
+  margin-bottom: 0.75em !important;
+}
+
+.wmde-markdown-color code,
+.wmde-markdown code {
+  color: #8b5a2b !important;
+  background-color: rgba(139, 115, 85, 0.1) !important;
+}
+
+/* Fix for code block styles */
+.wmde-markdown-color .wmde-markdown-pre code,
+.wmde-markdown .wmde-markdown-pre code {
+  color: #f5deb3 !important;
+  background-color: transparent !important;
+}
+
+.wmde-markdown-color .wmde-markdown-pre,
+.wmde-markdown .wmde-markdown-pre {
+  background-color: #2d2a24 !important;
+  border-color: #8b7355 !important;
+}
+
+/* Ensure MDEditor's preview is properly styled */
+.w-md-editor-preview {
+  background-color: #f9f6f0 !important;
+}
+
+/* Fix for the editor UI */
+.w-md-editor {
+  color: #4b3621 !important;
+  background-color: #f9f6f0 !important;
+  border-color: rgba(139, 115, 85, 0.2) !important;
+}
+
+/* Override default margins to match our theme */
+.wmde-markdown {
+  background-color: #f9f6f0 !important;
+}
+
+/* Fix for @uiw/react-md-editor's default theme inconsistencies */
+.wmde-markdown p {
+  color: #4b3621 !important;
+  margin: 1em 0 !important;
+}
+
+/* Remove weird borders from markdown lists */
+.wmde-markdown ul, 
+.wmde-markdown ol {
+  margin: 1em 0 !important;
+  padding-left: 2em !important;
+}
+
+/* Remove default bullets that might conflict with our styling */
+.wmde-markdown li::before {
+  display: none !important;
+}
+
+/* mdeditor fixes */
+.w-md-editor-text {
+  color: #4b3621 !important;
+}
+
+.w-md-editor-toolbar {
+  background-color: #f0e9dc !important;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.2) !important;
+}
+
+.w-md-editor-toolbar-divider {
+  background-color: rgba(139, 115, 85, 0.3) !important;
+}
+
+.w-md-editor-toolbar svg {
+  color: #4b3621 !important;
+}
+
+.w-md-editor-toolbar-child {
+  background-color: #f9f6f0 !important;
+  border: 1px solid rgba(139, 115, 85, 0.2) !important;
+}
+
+/* 修复预览区域内容 */
+div[data-color-mode="light"] .wmde-markdown-color {
+  color: #4b3621 !important;
+}
+
+/* 兼容 ReactMarkdown 渲染在其他区域 */
+article .markdown-body {
+  all: revert;
+  font-family: "Noto Serif", Georgia, "Times New Roman", serif;
+  color: #4b3621;
+  line-height: 1.6;
+}
+
+/* Transitions */
+.markdown-body * {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Reading experience */
+.scroll-container {
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .scroll-container {
+    padding: 0 2rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .markdown-body {
+    color: #e0d6c8;
+  }
+  
+  .markdown-body a {
+    color: #c0a884;
+  }
+  
+  .markdown-body a:hover {
+    color: #e0d6c8;
+  }
+  
+  .markdown-body table th {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .markdown-body table td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .markdown-body table tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .markdown-body img {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* 覆盖Markdown默认样式，以适应我们的设计系统 */
+
+.markdown-body {
+  /* 基础样式 */
+  font-family: "Noto Serif", Georgia, "Times New Roman", serif;
+  line-height: 1.8;
+  color: #4b3621;
+}
+
+/* 标题样式 */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  font-family: "Noto Serif", Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+  color: #4b3621;
+}
+
+.markdown-body h1 {
+  font-size: 2rem;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+  padding-bottom: 0.5rem;
+}
+
+.markdown-body h2 {
+  font-size: 1.5rem;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.1);
+  padding-bottom: 0.3rem;
+}
+
+.markdown-body h3 {
+  font-size: 1.25rem;
+}
+
+/* 段落和列表样式 */
+.markdown-body p,
+.markdown-body ul,
+.markdown-body ol {
+  margin-bottom: 1.25rem;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 1.5rem;
+}
+
+.markdown-body li {
+  margin-bottom: 0.5rem;
+}
+
+/* 引用块样式 */
+.markdown-body blockquote {
+  border-left: 4px solid #e8dfc7;
+  padding-left: 1rem;
+  color: #7c7267;
+  font-style: italic;
+  margin: 1.5rem 0;
+  background-color: rgba(248, 244, 232, 0.5);
+  padding: 0.75rem 1rem;
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+/* 代码样式 */
+.markdown-body code {
+  font-family: "Fira Code", Consolas, Monaco, "Andale Mono", monospace;
+  font-size: 0.9em;
+  background-color: rgba(139, 115, 85, 0.1);
+  color: #8b5a2b;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.2rem;
+}
+
+.markdown-body pre {
+  background-color: #2d2a24;
+  color: #f8f4e8;
+  padding: 1rem;
+  border-radius: 0.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border: 1px solid #8b7355;
+}
+
+.markdown-body pre code {
+  background-color: transparent;
+  color: #f5deb3;
+  padding: 0;
+}
+
+/* 表格样式 */
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.markdown-body th,
+.markdown-body td {
+  padding: 0.75rem;
+  border: 1px solid #e8dfc7;
+}
+
+.markdown-body th {
+  background-color: rgba(232, 223, 199, 0.3);
+}
+
+.markdown-body tr:nth-child(even) {
+  background-color: rgba(248, 244, 232, 0.3);
+}
+
+/* 水平线样式 */
+.markdown-body hr {
+  height: 1px;
+  background-color: #e8dfc7;
+  border: none;
+  margin: 2rem 0;
+}
+
+/* 链接样式 */
+.markdown-body a {
+  color: #4b3621;
+  text-decoration: none;
+  border-bottom: 1px solid #e8dfc7;
+  transition: all 0.2s;
+}
+
+.markdown-body a:hover {
+  color: #2a1a0f;
+  border-bottom-color: #8b7355;
+}
+
+/* 图片样式 */
+.markdown-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.25rem;
+  margin: 1.5rem 0;
+  box-shadow: 0 2px 4px rgba(139, 115, 85, 0.1);
+}
+
+/* 深色模式样式 */
+.dark .markdown-body {
+  color: #e2e8f0;
+}
+
+.dark .markdown-body h1,
+.dark .markdown-body h2,
+.dark .markdown-body h3,
+.dark .markdown-body h4,
+.dark .markdown-body h5,
+.dark .markdown-body h6 {
+  color: #f8fafc;
+}
+
+.dark .markdown-body h1 {
+  border-bottom-color: rgba(71, 85, 105, 0.5);
+}
+
+.dark .markdown-body h2 {
+  border-bottom-color: rgba(71, 85, 105, 0.3);
+}
+
+.dark .markdown-body blockquote {
+  border-left-color: #475569;
+  color: #cbd5e1;
+  background-color: rgba(30, 41, 59, 0.4);
+}
+
+.dark .markdown-body code {
+  background-color: rgba(30, 41, 59, 0.5);
+  color: #93c5fd;
+}
+
+.dark .markdown-body pre {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  border-color: #334155;
+}
+
+.dark .markdown-body pre code {
+  color: #cbd5e1;
+}
+
+.dark .markdown-body th,
+.dark .markdown-body td {
+  border-color: #334155;
+}
+
+.dark .markdown-body th {
+  background-color: rgba(30, 41, 59, 0.6);
+}
+
+.dark .markdown-body tr:nth-child(even) {
+  background-color: rgba(30, 41, 59, 0.3);
+}
+
+.dark .markdown-body hr {
+  background-color: #334155;
+}
+
+.dark .markdown-body a {
+  color: #93c5fd;
+  border-bottom-color: #475569;
+}
+
+.dark .markdown-body a:hover {
+  color: #bfdbfe;
+  border-bottom-color: #64748b;
+}
+
+.dark .markdown-body img {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+} 

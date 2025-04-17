@@ -1,75 +1,315 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import ReactMarkdown from "react-markdown";
+import Markdown from 'markdown-to-jsx';
 import MainLayout from "../layouts/MainLayout";
-import blogPosts from "../data/blogPosts";
+import * as postService from "../services/postService";
+import Button from "../components/ui/Button";
+import CodeBlock from "../components/ui/CodeBlock";
+import TableOfContents from "../components/ui/TableOfContents";
+import { FiArrowLeft, FiShare2, FiType, FiMoon, FiSun } from "react-icons/fi";
+import "./markdown-styles.css";
 
 // 装饰性分隔符
 const OrnamentalDivider = ({ symbol = "❖" }) => (
-  <div className="ornamental-divider">
-    <span className="px-2">{symbol}</span>
+  <div className="ornamental-divider flex items-center my-4">
+    <div className="flex-grow border-t border-sepia-light/30"></div>
+    <span className="px-2 text-sepia-muted">{symbol}</span>
+    <div className="flex-grow border-t border-sepia-light/30"></div>
   </div>
+);
+
+// 渲染纯文本内容的备用组件
+const PlainTextContent = ({ content }) => {
+  return (
+    <div className="whitespace-pre-wrap">
+      {content}
+    </div>
+  );
+};
+
+// 自定义Markdown组件
+const CustomCode = ({ children }) => (
+  <code className="bg-sepia-light/20 text-sepia-dark px-1.5 py-0.5 rounded font-mono text-sm">
+    {children}
+  </code>
+);
+
+// 自定义块引用组件
+const CustomBlockquote = ({ children }) => (
+  <blockquote className="border-l-4 border-sepia-light pl-4 italic my-6 text-sepia-dark/80 bg-sepia-light/10 py-3 pr-3 rounded-r">
+    {children}
+  </blockquote>
+);
+
+// 自定义标题组件
+const CustomH1 = ({ children }) => (
+  <h1 className="text-3xl font-serif text-sepia-dark mt-8 mb-4 pb-2 border-b border-sepia-light/30">{children}</h1>
+);
+
+const CustomH2 = ({ children }) => (
+  <h2 className="text-2xl font-serif text-sepia-dark mt-6 mb-3">{children}</h2>
+);
+
+const CustomH3 = ({ children }) => (
+  <h3 className="text-xl font-serif text-sepia-dark mt-5 mb-2">{children}</h3>
 );
 
 const PostPage = () => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [renderMode, setRenderMode] = useState('markdown'); // 'markdown' 或 'plain'
+  const [fontSize, setFontSize] = useState('medium'); // 'small', 'medium', 'large'
+  const [theme, setTheme] = useState('light'); // 'light' 或 'dark'
+  const [readingTime, setReadingTime] = useState(0); // 阅读时间（分钟）
   const navigate = useNavigate();
 
+  // 设置字体大小类
+  const fontSizeClasses = {
+    small: 'text-base',
+    medium: 'text-lg',
+    large: 'text-xl'
+  };
+
+  // 切换字体大小
+  const toggleFontSize = () => {
+    const sizes = ['small', 'medium', 'large'];
+    const currentIndex = sizes.indexOf(fontSize);
+    const nextIndex = (currentIndex + 1) % sizes.length;
+    setFontSize(sizes[nextIndex]);
+  };
+
+  // 切换主题
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    document.documentElement.classList.toggle('dark');
+    document.body.classList.toggle('dark');
+  };
+
+  // 计算阅读时间
+  const calculateReadingTime = (text) => {
+    const wordsPerMinute = 200; // 平均阅读速度
+    const wordCount = text.trim().split(/\s+/).length;
+    return Math.ceil(wordCount / wordsPerMinute);
+  };
+
   useEffect(() => {
-    const foundPost = blogPosts.find((p) => p.id === parseInt(id));
-    if (foundPost) {
-      setPost(foundPost);
-    } else {
-      navigate("/not-found", { replace: true });
-    }
+    const fetchPost = () => {
+      try {
+        console.log("Fetching post with ID:", id);
+        const foundPost = postService.getPostById(id);
+        console.log("Post data:", foundPost);
+        
+        if (foundPost) {
+          setPost(foundPost);
+          // 计算阅读时间
+          setReadingTime(calculateReadingTime(foundPost.content));
+          // 设置页面标题
+          document.title = `${foundPost.title} | Brou's Blog`;
+        } else {
+          console.error("Post not found");
+          setError("Post not found");
+          navigate("/not-found", { replace: true });
+        }
+      } catch (error) {
+        console.error("Failed to fetch post:", error);
+        setError(error.toString());
+        navigate("/not-found", { replace: true });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPost();
+
+    // 清理函数
+    return () => {
+      document.title = "Brou's Blog";
+    };
   }, [id, navigate]);
 
-  if (!post) {
-    return <div>Loading...</div>;
+  // 切换渲染模式
+  const toggleRenderMode = () => {
+    setRenderMode(renderMode === 'markdown' ? 'plain' : 'markdown');
+  };
+
+  // 分享帖子
+  const sharePost = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: post.title,
+        text: `Check out this post: ${post.title}`,
+        url: window.location.href,
+      })
+      .catch((error) => console.log('Error sharing', error));
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link copied to clipboard!');
+    }
+  };
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="container-wrapper">
+          <div className="flex justify-center items-center min-h-[50vh]">
+            <div className="animate-pulse flex flex-col items-center">
+              <div className="h-8 w-48 bg-sepia-light/30 rounded mb-4"></div>
+              <div className="h-4 w-24 bg-sepia-light/20 rounded mb-8"></div>
+              <div className="h-80 w-full max-w-xl bg-sepia-light/10 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <MainLayout>
+        <div className="container-wrapper">
+          <div className="text-center py-10">
+            <h1 className="text-xl text-red-500 mb-4">Error</h1>
+            <p className="text-sepia-dark mb-6">{error}</p>
+            <Button 
+              variant="primary" 
+              size="md"
+              to="/"
+            >
+              Return Home
+            </Button>
+          </div>
+        </div>
+      </MainLayout>
+    );
   }
 
   return (
     <MainLayout>
-      <div className="container-wrapper">
-        <Link
-          to="/"
-          className="text-sm font-medium text-sepia-muted hover:text-sepia-dark transition-colors duration-200 inline-flex items-center mb-10"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4 mr-1"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          Back to all posts
-        </Link>
+      <div className={`container-wrapper transition-colors duration-300 ${theme === 'dark' ? 'dark' : ''}`}>
+        <article className={`max-w-3xl mx-auto scroll-container ${fontSizeClasses[fontSize]}`}>
+          {/* 顶部工具栏 */}
+          <div className="sticky top-0 z-10 bg-sepia-lightest/90 dark:bg-gray-900/90 backdrop-blur-sm py-2 px-4 rounded-b-lg shadow-sm mb-8 flex justify-between items-center">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              to="/"
+              icon={<FiArrowLeft />}
+            >
+              Back
+            </Button>
+            
+            <div className="flex space-x-2">
+              <button 
+                onClick={toggleFontSize}
+                className="p-2 rounded-full hover:bg-sepia-light/20 transition-colors text-sepia-dark dark:text-gray-300"
+                aria-label="Change font size"
+              >
+                <FiType />
+              </button>
+              <button 
+                onClick={toggleTheme}
+                className="p-2 rounded-full hover:bg-sepia-light/20 transition-colors text-sepia-dark dark:text-gray-300"
+                aria-label="Toggle theme"
+              >
+                {theme === 'light' ? <FiMoon /> : <FiSun />}
+              </button>
+              <button 
+                onClick={sharePost}
+                className="p-2 rounded-full hover:bg-sepia-light/20 transition-colors text-sepia-dark dark:text-gray-300"
+                aria-label="Share post"
+              >
+                <FiShare2 />
+              </button>
+            </div>
+          </div>
 
-        <article className="max-w-3xl mx-auto scroll-container">
           <header className="mb-10 text-center">
-            <div className="text-sm text-sepia-muted mb-2">{post.date}</div>
-            <h1 className="text-4xl font-serif font-light text-sepia-dark mb-6">
+            <div className="text-sm text-sepia-muted dark:text-gray-400 mb-2">{post.date}</div>
+            <h1 className="text-4xl font-serif font-light text-sepia-dark dark:text-gray-200 mb-6">
               {post.title}
             </h1>
+            <div className="flex justify-center items-center text-xs text-sepia-muted dark:text-gray-400 mb-4">
+              <span className="px-2">{readingTime} min read</span>
+              <span className="px-2 border-l border-r border-sepia-light/20 dark:border-gray-700">
+                {post.status === 'published' ? 'Published' : 'Draft'}
+              </span>
+              <button 
+                onClick={toggleRenderMode}
+                className="px-2 hover:text-sepia-dark dark:hover:text-gray-300 transition-colors duration-200"
+              >
+                {renderMode === 'markdown' ? 'Plain text' : 'Markdown'}
+              </button>
+            </div>
             <OrnamentalDivider symbol="◈" />
           </header>
 
-          <div className="blog-content prose prose-lg max-w-none">
-            <ReactMarkdown>{post.content}</ReactMarkdown>
+          <div className="blog-content prose prose-lg max-w-none prose-headings:font-serif prose-headings:font-normal prose-headings:text-sepia-dark dark:prose-headings:text-gray-200 dark:text-gray-300 dark:prose-a:text-blue-400">
+            {renderMode === 'markdown' ? (
+              <Markdown 
+                className="markdown-body"
+                options={{
+                  forceBlock: true,
+                  overrides: {
+                    code: CustomCode,
+                    pre: ({ children }) => children,
+                    code_block: CodeBlock,
+                    blockquote: CustomBlockquote,
+                    h1: CustomH1,
+                    h2: CustomH2,
+                    h3: CustomH3,
+                  }
+                }}
+              >
+                {post.content || ''}
+              </Markdown>
+            ) : (
+              // 备用方案：显示纯文本
+              <PlainTextContent content={post.content} />
+            )}
           </div>
 
           <footer className="mt-12">
             <OrnamentalDivider symbol="✦" />
+            <div className="flex justify-between items-center mt-8">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                to="/"
+              >
+                Back to Posts
+              </Button>
+              
+              <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={sharePost}
+                  icon={<FiShare2 />}
+                >
+                  Share
+                </Button>
+              </div>
+            </div>
           </footer>
         </article>
+
+        {/* 添加目录组件 */}
+        {renderMode === 'markdown' && post.content && (
+          <TableOfContents content={post.content} />
+        )}
+
+        {/* 添加调试信息 */}
+        <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-md text-xs text-gray-500 dark:text-gray-400 max-w-3xl mx-auto">
+          <details>
+            <summary>Debug Information</summary>
+            <pre className="mt-2 whitespace-pre-wrap overflow-x-auto">
+              {JSON.stringify({postId: id, postData: post, renderMode, fontSize, theme, readingTime}, null, 2)}
+            </pre>
+          </details>
+        </div>
       </div>
     </MainLayout>
   );
