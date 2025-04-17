@@ -4,11 +4,14 @@
   <meta charset="utf-8">
   <title>Redirecting...</title>
   <script>
-    // 获取当前URL，去掉GitHub Pages仓库路径
+    // 获取当前URL
     const path = window.location.pathname;
-    const repoPath = '/MyBlog';
     
-    // 对于不是直接位于仓库根目录的页面，重定向至index.html
+    // 检查当前域名是否已经是自定义域名
+    const isCustomDomain = window.location.hostname === 'www.brulog.com';
+    const repoPath = isCustomDomain ? '' : '/MyBlog';
+    
+    // 对于不是直接位于根目录的页面，重定向至带有hash的首页
     if (path !== repoPath && path !== repoPath + '/') {
       const redirectUrl = window.location.origin + repoPath + '/#' + path.replace(repoPath, '');
       window.location.replace(redirectUrl);
