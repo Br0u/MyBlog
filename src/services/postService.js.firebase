@@ -115,15 +115,10 @@ export const getPostById = async (id) => {
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
-      // 添加默认标签，如果数据中没有标签
-      const postData = docSnap.data();
-      const tags = postData.tags || ['markdown', 'blog'];
-      
       return {
         id: docSnap.id,
-        ...postData,
-        tags,
-        date: postData.date?.split('T')[0] || new Date().toISOString().split('T')[0]
+        ...docSnap.data(),
+        date: docSnap.data().date?.split('T')[0] || new Date().toISOString().split('T')[0]
       };
     } else {
       console.log('没有找到指定ID的文章');

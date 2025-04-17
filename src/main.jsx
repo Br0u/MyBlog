@@ -3,6 +3,8 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import './pages/markdown-styles.css'
 import App from './App.jsx'
+// 导入Firebase初始化函数
+import { initializeFirebaseData } from './services/postService';
 
 // 初始化主题设置
 const initializeTheme = () => {
@@ -20,8 +22,22 @@ const initializeTheme = () => {
   }
 };
 
-// 应用初始主题
-initializeTheme();
+// 初始化Firebase数据
+const initializeApp = async () => {
+  try {
+    // 应用初始主题
+    initializeTheme();
+    
+    // 初始化Firebase数据（如果数据库为空）
+    await initializeFirebaseData();
+    console.log('Firebase数据初始化完成');
+  } catch (error) {
+    console.error('应用初始化失败:', error);
+  }
+};
+
+// 执行初始化
+initializeApp();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

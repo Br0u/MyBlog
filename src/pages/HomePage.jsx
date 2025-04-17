@@ -5,7 +5,7 @@ import MainLayout from "../layouts/MainLayout";
 import * as postService from "../services/postService";
 import "./markdown-styles.css"; // Import the markdown styles
 import LoadingState from "../components/ui/LoadingState";
-import { FiClock, FiCalendar } from "react-icons/fi";
+import { FiClock, FiCalendar, FiTag } from "react-icons/fi";
 
 // 装饰性分隔符
 const OrnamentalDivider = ({ symbol = "❖" }) => (
@@ -38,15 +38,25 @@ const calculateReadingTime = (text) => {
   return Math.max(1, Math.ceil(wordCount / wordsPerMinute));
 };
 
+// Tag Badge Component
+const TagBadge = ({ tag }) => (
+  <span className="inline-block bg-amber-50 dark:bg-gray-700 text-amber-800 dark:text-gray-300 rounded-md px-2 py-1 text-xs mr-2 hover:bg-amber-100 dark:hover:bg-gray-600 transition-colors">
+    <FiTag className="inline-block mr-1" size={12} />
+    {tag}
+  </span>
+);
+
 const HomePage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchPosts = () => {
+    const fetchPosts = async () => {
       try {
-        const publishedPosts = postService.getPublishedPosts();
+        setLoading(true);
+        // 使用异步方法获取已发布文章
+        const publishedPosts = await postService.getPublishedPosts();
         console.log("Fetched posts:", publishedPosts);
         setPosts(publishedPosts);
       } catch (error) {
@@ -124,6 +134,14 @@ const HomePage = () => {
                 <div className="text-sepia dark:text-gray-300 mb-4 leading-relaxed">
                   {createExcerpt(post.content)}
                 </div>
+                {/* Tags section */}
+                {post.tags && post.tags.length > 0 && (
+                  <div className="flex flex-wrap mb-4">
+                    {post.tags.map((tag, index) => (
+                      <TagBadge key={index} tag={tag} />
+                    ))}
+                  </div>
+                )}
                 <Link
                   to={`/post/${post.id}`}
                   className="text-sm font-medium text-sepia-dark dark:text-blue-400 hover:text-sepia-darkest dark:hover:text-blue-300 inline-flex items-center group"

@@ -6,7 +6,7 @@ import * as postService from "../services/postService";
 import Button from "../components/ui/Button";
 import CodeBlock from "../components/ui/CodeBlock";
 import TableOfContents from "../components/ui/TableOfContents";
-import { FiArrowLeft, FiShare2, FiType, FiMoon, FiSun } from "react-icons/fi";
+import { FiArrowLeft, FiShare2, FiType, FiMoon, FiSun, FiTag } from "react-icons/fi";
 import "./markdown-styles.css";
 
 // 装饰性分隔符
@@ -54,6 +54,14 @@ const CustomH3 = ({ children }) => (
   <h3 className="text-xl font-serif text-sepia-dark mt-5 mb-2">{children}</h3>
 );
 
+// Tag Badge Component
+const TagBadge = ({ tag }) => (
+  <span className="inline-block bg-sepia-light/30 dark:bg-gray-700 text-sepia-dark dark:text-gray-300 rounded-full px-3 py-1 text-xs mr-2 mb-2">
+    <FiTag className="inline-block mr-1" size={12} />
+    {tag}
+  </span>
+);
+
 const PostPage = () => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
@@ -96,10 +104,12 @@ const PostPage = () => {
   };
 
   useEffect(() => {
-    const fetchPost = () => {
+    const fetchPost = async () => {
       try {
+        setLoading(true);
         console.log("Fetching post with ID:", id);
-        const foundPost = postService.getPostById(id);
+        // 使用异步方法获取文章
+        const foundPost = await postService.getPostById(id);
         console.log("Post data:", foundPost);
         
         if (foundPost) {
@@ -186,6 +196,11 @@ const PostPage = () => {
     );
   }
 
+  // 如果没有帖子数据返回空内容
+  if (!post) {
+    return null;
+  }
+
   return (
     <MainLayout>
       <div className={`container-wrapper transition-colors duration-300 ${theme === 'dark' ? 'dark' : ''}`}>
@@ -231,6 +246,12 @@ const PostPage = () => {
             <h1 className="text-4xl font-serif font-light text-sepia-dark dark:text-gray-200 mb-6">
               {post.title}
             </h1>
+            {/* Tags display */}
+            <div className="flex flex-wrap justify-center mb-4">
+              {post.tags && post.tags.map((tag, index) => (
+                <TagBadge key={index} tag={tag} />
+              ))}
+            </div>
             <div className="flex justify-center items-center text-xs text-sepia-muted dark:text-gray-400 mb-4">
               <span className="px-2">{readingTime} min read</span>
               <span className="px-2 border-l border-r border-sepia-light/20 dark:border-gray-700">
@@ -248,65 +269,75 @@ const PostPage = () => {
 
           <div className="blog-content prose prose-lg max-w-none prose-headings:font-serif prose-headings:font-normal prose-headings:text-sepia-dark dark:prose-headings:text-gray-200 dark:text-gray-300 dark:prose-a:text-blue-400">
             {renderMode === 'markdown' ? (
-              <Markdown 
-                className="markdown-body"
-                options={{
-                  forceBlock: true,
-                  overrides: {
-                    code: CustomCode,
-                    pre: ({ children }) => children,
-                    code_block: CodeBlock,
-                    blockquote: CustomBlockquote,
-                    h1: CustomH1,
-                    h2: CustomH2,
-                    h3: CustomH3,
-                  }
-                }}
-              >
-                {post.content || ''}
-              </Markdown>
+              <>
+                <TableOfContents content={post.content} />
+                <Markdown 
+                  options={{
+                    overrides: {
+                      code: CustomCode,
+                      blockquote: CustomBlockquote,
+                      h1: CustomH1,
+                      h2: CustomH2,
+                      h3: CustomH3,
+                      pre: ({ children }) => {
+                        // Check if it's a code block with language class
+                        if (children?.props?.className?.startsWith('language-')) {
+                          const language = children.props.className.replace('language-', '');
+                          const code = children.props.children;
+                          return <CodeBlock language={language} code={code} />;
+                        }
+                        return <pre>{children}</pre>;
+                      }
+                    }
+                  }}
+                >
+                  {post.content}
+                </Markdown>
+              </>
             ) : (
-              // 备用方案：显示纯文本
               <PlainTextContent content={post.content} />
             )}
           </div>
-
-          <footer className="mt-12">
-            <OrnamentalDivider symbol="✦" />
-            <div className="flex justify-between items-center mt-8">
-              <Button 
-                variant="ghost" 
-                size="sm"
-                to="/"
-              >
-                Back to Posts
-              </Button>
-              
-              <div className="flex space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={sharePost}
-                  icon={<FiShare2 />}
-                >
-                  Share
-                </Button>
+          
+          {/* 文章标签 */}
+          {post.tags && post.tags.length > 0 && (
+            <div className="mt-16 mb-6">
+              <OrnamentalDivider symbol="❧" />
+              <div className="flex flex-wrap gap-2 justify-center mt-6">
+                {post.tags.map((tag, index) => (
+                  <span 
+                    key={index}
+                    className="px-3 py-1 bg-sepia-light/20 dark:bg-gray-800 text-sepia-dark dark:text-gray-300 rounded-full text-xs"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
             </div>
-          </footer>
+          )}
+          
+          {/* 文章底部 */}
+          <div className="text-center my-16">
+            <p className="text-sepia-muted dark:text-gray-400 text-sm italic mb-6">
+              Thank you for reading this article.
+            </p>
+            <Button 
+              variant="primary" 
+              size="md"
+              to="/"
+              icon={<FiArrowLeft />}
+            >
+              Back to Home
+            </Button>
+          </div>
         </article>
 
-        {/* 添加目录组件 */}
-        {renderMode === 'markdown' && post.content && (
-          <TableOfContents content={post.content} />
-        )}
-
-        {/* 添加调试信息 */}
+        {/* 调试信息 */}
         <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-md text-xs text-gray-500 dark:text-gray-400 max-w-3xl mx-auto">
           <details>
             <summary>Debug Information</summary>
             <pre className="mt-2 whitespace-pre-wrap overflow-x-auto">
-              {JSON.stringify({postId: id, postData: post, renderMode, fontSize, theme, readingTime}, null, 2)}
+              {JSON.stringify({postId: id, readingTime, mode: renderMode}, null, 2)}
             </pre>
           </details>
         </div>
