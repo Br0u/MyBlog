@@ -1,0 +1,201 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+body {
+  font-family: "Noto Serif", Georgia, "Times New Roman", serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #4b3621; /* 棕色文字 */
+  line-height: 1.6;
+  background-color: #f5f1e8; /* 浅羊皮纸色 */
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.2) 2px,
+      transparent 2px
+    ),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.2) 2px, transparent 2px);
+  background-size: 50px 50px;
+  background-attachment: fixed;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply tracking-tight font-serif;
+  }
+
+  /* 添加卷轴效果的边缘阴影 */
+  main {
+    background-color: #f8f4e8; /* 稍亮的羊皮纸色 */
+    box-shadow: inset 0 0 10px rgba(139, 115, 85, 0.2),
+      0 1px 3px rgba(139, 115, 85, 0.1);
+    border-radius: 2px;
+    position: relative;
+  }
+}
+
+@layer components {
+  .container-wrapper {
+    @apply max-w-5xl mx-auto px-6 sm:px-8;
+  }
+
+  /* 卷轴式页面容器 */
+  .scroll-container {
+    @apply relative bg-scroll-paper py-8 px-2 sm:px-4;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(139, 115, 85, 0.1),
+      0 0 0 1px rgba(139, 115, 85, 0.05);
+  }
+
+  /* 卷轴装饰 */
+  .scroll-top,
+  .scroll-bottom {
+    @apply absolute left-0 right-0 h-4 bg-scroll-edges;
+    content: "";
+    z-index: 1;
+  }
+
+  .scroll-top {
+    @apply top-0 rounded-t-sm;
+    background-image: linear-gradient(to bottom, #e6dfc8, transparent);
+  }
+
+  .scroll-bottom {
+    @apply bottom-0 rounded-b-sm;
+    background-image: linear-gradient(to top, #e6dfc8, transparent);
+  }
+
+  .blog-content {
+    @apply prose prose-lg max-w-none;
+    color: #4b3621;
+  }
+
+  .blog-content h1 {
+    @apply text-3xl font-light text-sepia-dark mt-10 mb-4;
+    border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+    padding-bottom: 0.5rem;
+  }
+
+  .blog-content h2 {
+    @apply text-2xl font-normal text-sepia-dark mt-8 mb-4;
+    border-bottom: 1px solid rgba(139, 115, 85, 0.1);
+    padding-bottom: 0.3rem;
+  }
+
+  .blog-content h3 {
+    @apply text-xl font-normal text-sepia-dark mt-6 mb-3;
+  }
+
+  .blog-content p {
+    @apply text-sepia my-4 leading-relaxed;
+  }
+
+  .blog-content a {
+    @apply text-sepia-dark hover:text-sepia-darkest border-b border-sepia-light;
+  }
+
+  .blog-content ul,
+  .blog-content ol {
+    @apply my-6 pl-6;
+  }
+
+  .blog-content li {
+    @apply mb-2 text-sepia;
+  }
+
+  .blog-content blockquote {
+    @apply italic border-l-2 border-sepia-light pl-4 text-sepia-muted;
+    background-color: rgba(248, 244, 232, 0.5);
+    padding: 0.5rem 0;
+  }
+
+  /* 改善代码块的对比度 */
+  .blog-content pre {
+    @apply my-6 overflow-x-auto rounded-sm;
+    background-color: #2d2a24; /* 深褐色背景 */
+    padding: 1rem;
+    color: #f8f4e8; /* 浅色文字 */
+    border: 1px solid #8b7355; /* 棕色边框 */
+  }
+
+  .blog-content code {
+    @apply rounded text-sm;
+    background-color: rgba(139, 115, 85, 0.1);
+    color: #8b5a2b; /* 棕色代码文字 */
+    padding: 0.1rem 0.3rem;
+  }
+
+  /* 代码块内的代码 */
+  .blog-content pre code {
+    background-color: transparent;
+    color: #f5deb3; /* 浅麦色文字 */
+    padding: 0;
+  }
+
+  /* 添加装饰性的分隔符 */
+  .ornamental-divider {
+    display: flex;
+    align-items: center;
+    margin: 2rem 0;
+    color: #8b7355;
+  }
+
+  .ornamental-divider::before,
+  .ornamental-divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+  }
+
+  .ornamental-divider::before {
+    margin-right: 0.5rem;
+  }
+
+  .ornamental-divider::after {
+    margin-left: 0.5rem;
+  }
+
+  /* 羊皮纸样式的卡片 */
+  .parchment-card {
+    @apply bg-scroll-paper rounded-sm p-6;
+    box-shadow: 0 1px 3px rgba(139, 115, 85, 0.1),
+      0 0 0 1px rgba(139, 115, 85, 0.05);
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .parchment-card:hover {
+    box-shadow: 0 3px 6px rgba(139, 115, 85, 0.15),
+      0 0 0 1px rgba(139, 115, 85, 0.1);
+  }
+
+  /* 链接悬停效果 */
+  a.hover-effect {
+    @apply relative;
+  }
+
+  a.hover-effect::after {
+    @apply absolute bottom-0 left-0 w-0 h-px bg-sepia-dark transition-all duration-300 ease-in-out;
+    content: "";
+  }
+
+  a.hover-effect:hover::after {
+    @apply w-full;
+  }
+
+  /* 装饰性的引用标记 */
+  .decorative-quote::before {
+    content: '"';
+    font-family: Georgia, serif;
+    font-size: 4rem;
+    position: absolute;
+    left: -1.5rem;
+    top: -1rem;
+    color: rgba(139, 115, 85, 0.2);
+  }
+}
